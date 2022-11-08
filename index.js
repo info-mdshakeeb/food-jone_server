@@ -27,18 +27,36 @@ const Mongodb = () => {
 Mongodb();
 
 const User = client.db("food-Zone").collection("users");
+const Services = client.db("food-Zone").collection("services");
 
-//registation :
+//registation data saVE :
 app.post("/user", async (req, res) => {
     const cursor = req.body;
     try {
-        const users = await User.insertOne(cursor);
+        const user = await User.insertOne(cursor);
         res.send({
             success: true,
-            data: users
+            data: cursor
         })
+        console.log(user)
     } catch (error) {
         console.log(error.name, error.message);
     }
 })
+app.get('/serviceSection', async (req, res) => {
+    try {
+        const serviceSection = await Services.find().limit(3).toArray();
+        res.send({
+            success: true,
+            data: serviceSection
+        })
+    } catch (error) {
+        console.log(error.name, error.message)
+    }
+})
+
+
+
+
+
 app.listen(port, () => console.log(port, "port is open"))

@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 2100;
 
 // middleware
@@ -52,6 +52,27 @@ app.get('/serviceSection', async (req, res) => {
         })
     } catch (error) {
         console.log(error.name, error.message)
+    }
+})
+app.get('/services/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const user = await Services.findOne({ _id: ObjectId(id) });
+        res.send(
+            {
+                succerss: true,
+                data: user
+            }
+        )
+        console.log(user)
+    } catch (error) {
+        console.log(error.name, error.message);
+        res.send(
+            {
+                succerss: false,
+                message: "Delate item faild"
+            }
+        )
     }
 })
 

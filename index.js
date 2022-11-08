@@ -28,6 +28,7 @@ Mongodb();
 
 const User = client.db("food-Zone").collection("users");
 const Services = client.db("food-Zone").collection("services");
+const Review = client.db("food-Zone").collection("review");
 
 //registation data saVE :
 app.post("/user", async (req, res) => {
@@ -74,7 +75,6 @@ app.get("/Services", async (req, res) => {
     }
 })
 
-
 app.get('/services/:id', async (req, res) => {
     const { id } = req.params;
     try {
@@ -96,7 +96,25 @@ app.get('/services/:id', async (req, res) => {
         )
     }
 })
-
+app.get("/reviews", async (req, res) => {
+    try {
+        const reviews = await Review.find({}).toArray();
+        res.send(
+            {
+                succerss: true,
+                data: reviews
+            }
+        )
+    } catch (error) {
+        console.log(error.name, error.message);
+        res.send(
+            {
+                succerss: false,
+                message: "Delate item faild"
+            }
+        )
+    }
+})
 
 
 

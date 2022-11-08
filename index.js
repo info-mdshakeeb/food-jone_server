@@ -54,17 +54,38 @@ app.get('/serviceSection', async (req, res) => {
         console.log(error.name, error.message)
     }
 })
-app.get('/services/:id', async (req, res) => {
-    const { id } = req.params;
+app.get("/Services", async (req, res) => {
     try {
-        const user = await Services.findOne({ _id: ObjectId(id) });
+        const services = await Services.find({}).toArray();
         res.send(
             {
                 succerss: true,
-                data: user
+                data: services
             }
         )
-        console.log(user)
+    } catch (error) {
+        console.log(error.name, error.message);
+        res.send(
+            {
+                succerss: false,
+                message: "Delate item faild"
+            }
+        )
+    }
+})
+
+
+app.get('/services/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const service = await Services.findOne({ _id: ObjectId(id) });
+        res.send(
+            {
+                succerss: true,
+                data: service
+            }
+        )
+
     } catch (error) {
         console.log(error.name, error.message);
         res.send(

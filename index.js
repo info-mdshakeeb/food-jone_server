@@ -26,4 +26,19 @@ const Mongodb = () => {
 };
 Mongodb();
 
+const User = client.db("food-Zone").collection("users");
+
+//registation :
+app.post("/user", async (req, res) => {
+    const cursor = req.body;
+    try {
+        const users = await User.insertOne(cursor);
+        res.send({
+            success: true,
+            data: users
+        })
+    } catch (error) {
+        console.log(error.name, error.message);
+    }
+})
 app.listen(port, () => console.log(port, "port is open"))

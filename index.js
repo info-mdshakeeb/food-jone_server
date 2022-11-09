@@ -74,6 +74,19 @@ app.get("/Services", async (req, res) => {
         )
     }
 })
+app.post("/addservices", async (req, res) => {
+    const cursor = req.body;
+    try {
+        const reviews = await Services.insertOne(cursor);
+        res.send({
+            success: true,
+            data: reviews
+        })
+    } catch (error) {
+        console.log(error.name, error.message);
+    }
+})
+
 app.get('/services/:id', async (req, res) => {
     const { id } = req.params;
     try {

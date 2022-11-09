@@ -44,6 +44,7 @@ app.post("/user", async (req, res) => {
         console.log(error.name, error.message);
     }
 })
+
 app.get('/serviceSection', async (req, res) => {
     try {
         const serviceSection = await Services.find().limit(3).toArray();
@@ -86,17 +87,15 @@ app.post("/addservices", async (req, res) => {
         console.log(error.name, error.message);
     }
 })
-
 app.get('/services/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const service = await Services.findOne({ _id: ObjectId(id) });
-        const reviews = await Review.find({}).toArray();
         res.send(
             {
                 succerss: true,
-                data: service,
-                reviews: reviews
+                data: service
+
             }
         )
 
@@ -110,9 +109,15 @@ app.get('/services/:id', async (req, res) => {
         )
     }
 })
+
+
 app.get("/reviews", async (req, res) => {
+    let query = {}
+    if (req.query.email) {
+        query = { email: req.query.email }
+    }
     try {
-        const reviews = await Review.find({}).toArray();
+        const reviews = await Review.find(query).toArray();
         res.send(
             {
                 succerss: true,
@@ -139,26 +144,6 @@ app.post("/reviews", async (req, res) => {
         })
     } catch (error) {
         console.log(error.name, error.message);
-    }
-})
-app.post("/myreviews", async (req, res) => {
-    const cursor = req.body;
-    try {
-        const myreviews = await Review.find(cursor).toArray();
-        res.send(
-            {
-                succerss: true,
-                data: myreviews
-            }
-        )
-    } catch (error) {
-        console.log(error.name, error.message);
-        res.send(
-            {
-                succerss: false,
-                message: 'something not right'
-            }
-        )
     }
 })
 

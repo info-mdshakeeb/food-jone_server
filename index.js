@@ -74,15 +74,16 @@ app.get("/Services", async (req, res) => {
         )
     }
 })
-
 app.get('/services/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const service = await Services.findOne({ _id: ObjectId(id) });
+        const reviews = await Review.find({}).toArray();
         res.send(
             {
                 succerss: true,
-                data: service
+                data: service,
+                reviews: reviews
             }
         )
 
@@ -115,8 +116,38 @@ app.get("/reviews", async (req, res) => {
         )
     }
 })
-
-
+app.post("/reviews", async (req, res) => {
+    const cursor = req.body;
+    try {
+        const reviews = await Review.insertOne(cursor);
+        res.send({
+            success: true,
+            data: reviews
+        })
+    } catch (error) {
+        console.log(error.name, error.message);
+    }
+})
+app.post("/myreviews", async (req, res) => {
+    const cursor = req.body;
+    try {
+        const myreviews = await Review.find(cursor).toArray();
+        res.send(
+            {
+                succerss: true,
+                data: myreviews
+            }
+        )
+    } catch (error) {
+        console.log(error.name, error.message);
+        res.send(
+            {
+                succerss: false,
+                message: 'something not right'
+            }
+        )
+    }
+})
 
 
 app.listen(port, () => console.log(port, "port is open"))

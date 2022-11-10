@@ -33,7 +33,7 @@ const Services = client.db("food-Zone").collection("services");
 const Review = client.db("food-Zone").collection("review");
 
 //registation data saVE :
-app.post("/user", auth, async (req, res) => {
+app.post("/user", async (req, res) => {
     const cursor = req.body;
     try {
         const user = await User.insertOne(cursor);
@@ -49,7 +49,7 @@ app.post("/user", auth, async (req, res) => {
 app.post("/login", async (req, res) => {
     const { email } = req.body;
     try {
-        const user = await User.findOne({ email });
+        const user = await User.find({ email });
         if (!user) {
             return res.send({
                 status: false,
@@ -58,6 +58,7 @@ app.post("/login", async (req, res) => {
         }
         //crerate token :
         const token = jwt.sign(user, process.env.JWT_SECRET)
+        console.log(token)
         res.send({
             success: true,
             token: token

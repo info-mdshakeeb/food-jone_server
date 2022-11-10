@@ -160,10 +160,8 @@ app.delete('/reviews/:id', async (req, res) => {
 //update review :
 app.patch("/reviews/:id", async (req, res) => {
     const { id } = req.params;
-
     try {
         const result = await Review.updateOne({ _id: ObjectId(id) }, { $set: req.body });
-
         if (result.matchedCount) {
             res.send({
                 success: true,
@@ -187,36 +185,18 @@ app.get('/review/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const review = await Review.findOne({ _id: ObjectId(id) })
-        res.send({
-            success: true,
-            data: review
-        })
+        res.send({ success: true, data: review })
     } catch (error) {
-        res.send(
-            {
-                success: false,
-                message: error.message
-            }
-        )
+        res.send({ success: false, message: error.message })
     }
 })
-
-
-
-
-
 app.post("/reviews", async (req, res) => {
     const cursor = req.body;
     try {
         const reviews = await Review.insertOne(cursor);
-        res.send({
-            success: true,
-            data: reviews
-        })
+        res.send({ success: true, data: reviews })
     } catch (error) {
         console.log(error.name, error.message);
     }
 })
-
-
 app.listen(port, () => console.log(port, "port is open"))

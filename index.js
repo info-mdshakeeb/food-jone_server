@@ -79,14 +79,16 @@ app.get('/serviceSection', async (req, res) => {
 })
 //all services :
 app.get("/Services", async (req, res) => {
+    const cursor = Services.find({}).sort({ dateAdded: -1 })
     try {
-        const services = await Services.find({}).toArray();
+        const services = await cursor.toArray();
         res.send(
             {
                 succerss: true,
                 data: services
             }
         )
+
     } catch (error) {
         console.log(error.name, error.message);
         res.send(

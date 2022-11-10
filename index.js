@@ -1,8 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId, ObjectID } = require('mongodb');
+const auth = require("./middleware/auth");
 const port = process.env.PORT || 2100;
 
 // middleware
@@ -31,7 +33,7 @@ const Services = client.db("food-Zone").collection("services");
 const Review = client.db("food-Zone").collection("review");
 
 //registation data saVE :
-app.post("/user", async (req, res) => {
+app.post("/user", auth, async (req, res) => {
     const cursor = req.body;
     try {
         const user = await User.insertOne(cursor);
@@ -42,6 +44,26 @@ app.post("/user", async (req, res) => {
         console.log(user)
     } catch (error) {
         console.log(error.name, error.message);
+    }
+})
+app.post("/login", async (req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.send({
+                status: false,
+                message: "invalid user"
+            })
+        }
+        //crerate token :
+        const token = jwt.sign(user, process.env.JWT_SECRET)
+        res.send({
+            success: true,
+            token: token
+        })
+    } catch (error) {
+        console.log(error.name, error.message)
     }
 })
 app.get('/serviceSection', async (req, res) => {
@@ -110,11 +132,34 @@ app.get('/services/:id', async (req, res) => {
     }
 })
 //all reviews && filter with email :
-app.get("/reviews", async (req, res) => {
+app.get("/myreviews", auth, async (req, res) => {
     let query = {}
     if (req.query.email) {
         query = { email: req.query.email }
     }
+    if (req.query.id) {
+        query = { id: req.query.id }
+    }
+    try {
+        const reviews = await Review.find(query).toArray();
+        res.send(
+            {
+                succerss: true,
+                data: reviews
+            }
+        )
+    } catch (error) {
+        console.log(error.name, error.message);
+        res.send(
+            {
+                succerss: false,
+                message: "Delate item faild"
+            }
+        )
+    }
+})
+app.get("/reviews", async (req, res) => {
+    let query = {}
     if (req.query.id) {
         query = { id: req.query.id }
     }
@@ -199,4 +244,7 @@ app.post("/reviews", async (req, res) => {
         console.log(error.name, error.message);
     }
 })
+//login
+
+
 app.listen(port, () => console.log(port, "port is open"))

@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 require('dotenv').config();
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId, ObjectID } = require('mongodb');
 const port = process.env.PORT || 2100;
 
 // middleware
@@ -44,7 +44,6 @@ app.post("/user", async (req, res) => {
         console.log(error.name, error.message);
     }
 })
-
 app.get('/serviceSection', async (req, res) => {
     try {
         const serviceSection = await Services.find().limit(3).toArray();
@@ -56,6 +55,7 @@ app.get('/serviceSection', async (req, res) => {
         console.log(error.name, error.message)
     }
 })
+//all services :
 app.get("/Services", async (req, res) => {
     try {
         const services = await Services.find({}).toArray();
@@ -109,12 +109,14 @@ app.get('/services/:id', async (req, res) => {
         )
     }
 })
-
-
+//all reviews && filter with email :
 app.get("/reviews", async (req, res) => {
     let query = {}
     if (req.query.email) {
         query = { email: req.query.email }
+    }
+    if (req.query.id) {
+        query = { id: req.query.id }
     }
     try {
         const reviews = await Review.find(query).toArray();
@@ -134,6 +136,75 @@ app.get("/reviews", async (req, res) => {
         )
     }
 })
+//delete review :
+app.delete('/reviews/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const user = await Review.deleteOne({ _id: ObjectId(id) });
+        res.send(
+            {
+                succerss: true,
+                data: user
+            }
+        )
+    } catch (error) {
+        console.log(error.name, error.message);
+        res.send(
+            {
+                succerss: false,
+                message: "Delate item faild"
+            }
+        )
+    }
+})
+//update review :
+app.patch("/reviews/:id", async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const result = await Review.updateOne({ _id: ObjectId(id) }, { $set: req.body });
+
+        if (result.matchedCount) {
+            res.send({
+                success: true,
+                message: `successfully updated ${req.body.name}`,
+            });
+        } else {
+            res.send({
+                success: false,
+                error: "Couldn't update  the product",
+            });
+        }
+    } catch (error) {
+        res.send({
+            success: false,
+            error: error.message,
+        });
+    }
+});
+//singel product load :
+app.get('/review/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const review = await Review.findOne({ _id: ObjectId(id) })
+        res.send({
+            success: true,
+            data: review
+        })
+    } catch (error) {
+        res.send(
+            {
+                success: false,
+                message: error.message
+            }
+        )
+    }
+})
+
+
+
+
+
 app.post("/reviews", async (req, res) => {
     const cursor = req.body;
     try {
